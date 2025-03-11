@@ -248,104 +248,55 @@ export default function ImageProcessor() {
     try {
       setLoading(true);
 
-      // Create a new image and wait for it to load
+      // Load original image
       const img = new Image();
-      img.crossOrigin = "anonymous";
-      
-      // iOS Safari specific handling
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      if (isIOS) {
-        img.setAttribute('crossorigin', 'anonymous');
-      }
-      
-      // Wait for image to load before proceeding
-      await new Promise((resolve, reject) => {
+      img.src = imageUrl;
+      await new Promise((resolve) => {
         img.onload = resolve;
-        img.onerror = (error) => {
-          console.error('Error loading image:', error);
-          reject(error);
-        };
-        img.src = imageUrl;
       });
 
-      // Pre-process image through canvas to ensure proper format
-      const preprocessCanvas = document.createElement('canvas');
-      const preprocessCtx = preprocessCanvas.getContext('2d');
-      preprocessCanvas.width = img.width;
-      preprocessCanvas.height = img.height;
+      // Calculate dimensions to fit container
+      const containerWidth = containerRef.current?.clientWidth ?? 800;
+      const containerHeight = containerRef.current?.clientHeight ?? 600;
+      const maxWidth = Math.min(containerWidth, 800);
+      const maxHeight = Math.min(containerHeight, 600);
       
-      if (preprocessCtx) {
-        preprocessCtx.drawImage(img, 0, 0);
-        const processedImageUrl = preprocessCanvas.toDataURL('image/jpeg', 0.95);
+      let finalWidth = img.width;
+      let finalHeight = img.height;
+      
+      // Scale down if image is larger than container
+      if (finalWidth > maxWidth || finalHeight > maxHeight) {
+        const widthRatio = maxWidth / finalWidth;
+        const heightRatio = maxHeight / finalHeight;
+        const scale = Math.min(widthRatio, heightRatio);
         
-        // Load processed image
-        const processedImg = new Image();
-        processedImg.crossOrigin = "anonymous";
-        
-        await new Promise((resolve, reject) => {
-          processedImg.onload = resolve;
-          processedImg.onerror = reject;
-          processedImg.src = processedImageUrl;
-        });
-        
-        // Calculate dimensions to fit container
-        const containerWidth = containerRef.current?.clientWidth ?? 800;
-        const containerHeight = containerRef.current?.clientHeight ?? 600;
-        const maxWidth = Math.min(containerWidth, 800);
-        const maxHeight = Math.min(containerHeight, 600);
-        
-        let finalWidth = processedImg.width;
-        let finalHeight = processedImg.height;
-        
-        // Scale down if image is larger than container
-        if (finalWidth > maxWidth || finalHeight > maxHeight) {
-          const widthRatio = maxWidth / finalWidth;
-          const heightRatio = maxHeight / finalHeight;
-          const scale = Math.min(widthRatio, heightRatio);
-          
-          finalWidth = Math.floor(finalWidth * scale);
-          finalHeight = Math.floor(finalHeight * scale);
-        }
-
-        // Convert to blob for background removal
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = finalWidth;
-        canvas.height = finalHeight;
-        
-        if (ctx) {
-          ctx.drawImage(processedImg, 0, 0, finalWidth, finalHeight);
-          const blob = await new Promise<Blob>((resolve) => {
-            canvas.toBlob((blob) => resolve(blob!), 'image/jpeg', 0.95);
-          });
-
-          // Get subject-only image
-          const subjectBlob = await removeBackground(blob);
-          const subjectUrl = URL.createObjectURL(subjectBlob);
-          
-          // Create and load the subject image
-          const subjectImg = new Image();
-          subjectImg.crossOrigin = "anonymous";
-          
-          await new Promise((resolve, reject) => {
-            subjectImg.onload = resolve;
-            subjectImg.onerror = reject;
-            subjectImg.src = subjectUrl;
-          });
-
-          // Store processed images for reuse
-          setProcessedImages({
-            original: processedImg,
-            subject: subjectImg,
-            width: finalWidth,
-            height: finalHeight
-          });
-
-          // Clean up
-          URL.revokeObjectURL(subjectUrl);
-        }
+        finalWidth = Math.floor(finalWidth * scale);
+        finalHeight = Math.floor(finalHeight * scale);
       }
-      
+
+      // Convert base64 to blob
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+
+      // Get subject-only image
+      const subjectBlob = await removeBackground(blob);
+      const subjectUrl = URL.createObjectURL(subjectBlob);
+      const subjectImg = new Image();
+      subjectImg.src = subjectUrl;
+      await new Promise((resolve) => {
+        subjectImg.onload = resolve;
+      });
+
+      // Store processed images for reuse
+      setProcessedImages({
+        original: img,
+        subject: subjectImg,
+        width: finalWidth,
+        height: finalHeight
+      });
+
+      // Clean up
+      URL.revokeObjectURL(subjectUrl);
       setLoading(false);
     } catch (error) {
       console.error('Error processing image:', error);

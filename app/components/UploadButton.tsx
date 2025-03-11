@@ -11,75 +11,16 @@ export default function UploadButton({ isDarkMode }: Props) {
     const file = acceptedFiles[0];
     if (!file) return;
 
-    // Handle iOS image upload
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    
     try {
-      // Create a new FileReader
       const reader = new FileReader();
       
-      reader.onload = async (e) => {
+      reader.onload = (e) => {
         const target = e.target as FileReader | null;
         if (target?.result) {
-          try {
-            // Create a temporary image to get dimensions
-            const img = new Image();
-            
-            // For iOS, we need to handle the image loading differently
-            if (isIOS) {
-              img.setAttribute('crossorigin', 'anonymous');
-            }
-            
-            await new Promise((resolve, reject) => {
-              img.onload = resolve;
-              img.onerror = (error) => {
-                console.error('Error loading image:', error);
-                reject(error);
-              };
-              
-              // Set source after adding event listeners
-              if (typeof target.result === 'string') {
-                img.src = target.result;
-              }
-            });
-
-            // Create a canvas to handle the image
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            // Set canvas dimensions based on image size
-            let finalWidth = img.width;
-            let finalHeight = img.height;
-            
-            // Resize if image is too large
-            if (img.width > 4096 || img.height > 4096) {
-              const scale = Math.min(4096 / img.width, 4096 / img.height);
-              finalWidth = Math.floor(img.width * scale);
-              finalHeight = Math.floor(img.height * scale);
-            }
-            
-            canvas.width = finalWidth;
-            canvas.height = finalHeight;
-            
-            if (ctx) {
-              // Enable image smoothing for better quality
-              ctx.imageSmoothingEnabled = true;
-              ctx.imageSmoothingQuality = 'high';
-              
-              // Draw image to canvas
-              ctx.drawImage(img, 0, 0, finalWidth, finalHeight);
-              
-              // Convert to JPEG with high quality
-              const processedImageUrl = canvas.toDataURL('image/jpeg', 0.95);
-              
-              // Dispatch event with processed image
-              window.dispatchEvent(new CustomEvent('imageUploaded', {
-                detail: { imageUrl: processedImageUrl }
-              }));
-            }
-          } catch (error) {
-            console.error('Error processing image:', error);
-          }
+          // Directly dispatch the event with the image data
+          window.dispatchEvent(new CustomEvent('imageUploaded', {
+            detail: { imageUrl: target.result }
+          }));
         }
       };
 
@@ -87,9 +28,7 @@ export default function UploadButton({ isDarkMode }: Props) {
         console.error('Error reading file:', error);
       };
 
-      // Read file as data URL
       reader.readAsDataURL(file);
-      
     } catch (error) {
       console.error('Error handling file:', error);
     }
@@ -109,7 +48,11 @@ export default function UploadButton({ isDarkMode }: Props) {
       {...getRootProps()} 
       className={`relative group cursor-pointer`}
     >
-      <input {...getInputProps()} capture="environment" />
+      <input 
+        {...getInputProps()} 
+        accept="image/*"
+        // Remove capture attribute to allow all upload options
+      />
       <button
         className={`
           px-6 py-2.5 rounded-xl text-sm font-medium
@@ -136,7 +79,6 @@ export default function UploadButton({ isDarkMode }: Props) {
         {isDragActive ? 'Drop image here...' : 'Upload Image'}
       </button>
       
-      {/* Drag indicator */}
       {isDragActive && (
         <div className={`
           absolute inset-0 -m-2 rounded-2xl border-2 border-dashed
