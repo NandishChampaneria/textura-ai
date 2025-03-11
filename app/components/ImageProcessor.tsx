@@ -3,6 +3,7 @@ import { useCallback, useState, useRef, useEffect } from 'react';
 import { removeBackground } from '@imgly/background-removal';
 import UploadButton from './UploadButton';
 import TexturaLogo from './TexturaLogo';
+import Link from 'next/link';
 
 interface TextStyle {
   color: string;
@@ -321,8 +322,10 @@ export default function ImageProcessor() {
           <div className="h-16 flex items-center justify-between">
             {/* Logo/Brand */}
             <div className="flex items-center space-x-2">
-              <TexturaLogo />
-              <span className="text-lg font-semibold tracking-tight">Textura.ai</span>
+              <Link href="/" className="flex items-center space-x-2">
+                <TexturaLogo />
+                <span className="text-lg font-semibold tracking-tight">Textura.ai</span>
+              </Link>
             </div>
 
             {/* Right side controls */}
