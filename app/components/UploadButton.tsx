@@ -11,14 +11,51 @@ export default function UploadButton({ isDarkMode }: Props) {
     const file = acceptedFiles[0];
     if (!file) return;
 
+    // Create a new FileReader
     const reader = new FileReader();
+    
     reader.onload = async (e) => {
       if (e.target?.result) {
-        const imageUrl = e.target.result as string;
-        // We'll handle the image processing in ImageProcessor component
-        window.dispatchEvent(new CustomEvent('imageUploaded', { detail: { imageUrl } }));
+        try {
+          // Create a temporary image to get dimensions
+          const img = new Image();
+          img.src = e.target.result as string;
+          
+          await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = reject;
+          });
+
+          // Check if image is too large (optional, adjust limits as needed)
+          if (img.width > 4096 || img.height > 4096) {
+            // Resize the image before processing
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Calculate new dimensions
+            const scale = Math.min(4096 / img.width, 4096 / img.height);
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+            
+            if (ctx) {
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              const resizedImageUrl = canvas.toDataURL('image/jpeg', 0.9);
+              window.dispatchEvent(new CustomEvent('imageUploaded', { detail: { imageUrl: resizedImageUrl } }));
+            }
+          } else {
+            // Use original image if it's within size limits
+            window.dispatchEvent(new CustomEvent('imageUploaded', { detail: { imageUrl: e.target.result } }));
+          }
+        } catch (error) {
+          console.error('Error processing uploaded image:', error);
+        }
       }
     };
+
+    reader.onerror = () => {
+      console.error('Error reading file');
+    };
+
     reader.readAsDataURL(file);
   }, []);
 
@@ -27,7 +64,8 @@ export default function UploadButton({ isDarkMode }: Props) {
     accept: {
       'image/*': ['.png', '.jpg', '.jpeg']
     },
-    multiple: false
+    multiple: false,
+    maxSize: 20 * 1024 * 1024 // 20MB limit
   });
 
   return (

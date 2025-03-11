@@ -179,7 +179,8 @@ export default function ImageProcessor() {
     const { width, height } = processedImages;
     const canvas = canvasRef.current;
     
-    const dpr = window.devicePixelRatio * 2;
+    // Adjust for device pixel ratio
+    const dpr = Math.max(window.devicePixelRatio, 2);
     canvas.width = width * dpr;
     canvas.height = height * dpr;
     canvas.style.width = `${width}px`;
@@ -193,19 +194,27 @@ export default function ImageProcessor() {
     
     if (!ctx) return;
 
+    // Scale context for retina displays
     ctx.scale(dpr, dpr);
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
+    // Clear canvas and draw original image
     ctx.clearRect(0, 0, width, height);
-    ctx.drawImage(processedImages.original, 0, 0, width, height);
+    
+    // Ensure images are loaded before drawing
+    if (processedImages.original.complete) {
+      ctx.drawImage(processedImages.original, 0, 0, width, height);
+    }
 
     // Draw each text layer
     textLayers.forEach(layer => {
-    ctx.save();
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    
+      if (!layer) return;  // Skip if layer is undefined
+      
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
       const fontSize = Math.min(width, height) * (layer.fontSize / 100);
       ctx.font = `${layer.fontWeight} ${Math.ceil(fontSize)}px "${layer.fontFamily}", -apple-system, BlinkMacSystemFont, system-ui, Arial`;
 
@@ -218,20 +227,19 @@ export default function ImageProcessor() {
       ctx.translate(-xPos, -yPos);
 
       const opacity = Math.round(layer.opacity * 255).toString(16).padStart(2, '0');
-      
       ctx.fillStyle = `${layer.color}${opacity}`;
-    ctx.textRendering = 'geometricPrecision';
-    ctx.fontKerning = 'normal';
-    ctx.fontStretch = 'normal';
-    ctx.fontVariantCaps = 'normal';
+      ctx.textRendering = 'geometricPrecision';
+      ctx.fontKerning = 'normal';
+      ctx.fontStretch = 'normal';
+      ctx.fontVariantCaps = 'normal';
       ctx.letterSpacing = `${layer.letterSpacing}px`;
-    
+      
       ctx.fillText(layer.text, xPos, yPos);
-    ctx.restore();
+      ctx.restore();
     });
 
-    // Draw subject on top
-    if (processedImages.subject instanceof HTMLImageElement) {
+    // Draw subject on top if it's loaded
+    if (processedImages.subject.complete) {
       ctx.drawImage(processedImages.subject, 0, 0, width, height);
     }
   };
@@ -240,15 +248,15 @@ export default function ImageProcessor() {
     try {
       setLoading(true);
 
-      // Convert base64 to blob
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-
-      // Load original image
+      // Create a new image and wait for it to load
       const img = new Image();
-      img.src = imageUrl;
-      await new Promise((resolve) => {
+      img.crossOrigin = "anonymous";  // Add this line
+      
+      // Wait for image to load before proceeding
+      await new Promise((resolve, reject) => {
         img.onload = resolve;
+        img.onerror = reject;
+        img.src = imageUrl;
       });
 
       // Calculate dimensions to fit container
@@ -270,13 +278,22 @@ export default function ImageProcessor() {
         finalHeight = Math.floor(finalHeight * scale);
       }
 
+      // Convert base64 to blob more reliably
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+
       // Get subject-only image
       const subjectBlob = await removeBackground(blob);
       const subjectUrl = URL.createObjectURL(subjectBlob);
+      
+      // Create and load the subject image
       const subjectImg = new Image();
-      subjectImg.src = subjectUrl;
-      await new Promise((resolve) => {
+      subjectImg.crossOrigin = "anonymous";  // Add this line
+      
+      await new Promise((resolve, reject) => {
         subjectImg.onload = resolve;
+        subjectImg.onerror = reject;
+        subjectImg.src = subjectUrl;
       });
 
       // Store processed images for reuse
