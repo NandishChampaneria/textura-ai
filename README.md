@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Textura.ai - Text on Image Editor
 
-## Getting Started
+A modern web application for adding and manipulating text on images with background removal capabilities.
 
-First, run the development server:
+## Features
 
+- 🖼️ Background removal from images (processed locally in the browser)
+- ✍️ Multiple text layers support
+- 🎨 Rich text customization options
+- 🌓 Dark/Light mode
+- 📱 Responsive design
+- ⚡ Real-time preview
+- 💾 High-quality image export
+- 🔒 Privacy-focused (all processing done client-side)
+
+## Tech Stack
+
+- Next.js 14
+- React
+- TypeScript
+- Tailwind CSS
+- @imgly/background-removal (client-side processing)
+
+## Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+
+## Local Development
+
+1. Clone the repository:
+```bash
+git clone https://github.com/NandishChampaneria/textura-ai.git
+cd textura-ai
+```
+
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+```
+
+3. Run the development server:
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Deploy on Vercel (Recommended)
 
-## Learn More
+The easiest way to deploy this application is using [Vercel](https://vercel.com):
 
-To learn more about Next.js, take a look at the following resources:
+1. Push your code to GitHub
+2. Go to [Vercel](https://vercel.com)
+3. Create an account or sign in
+4. Click "Import Project"
+5. Select your repository
+6. Click "Deploy"
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+That's it! Your app will be deployed and you'll get a production URL.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Alternative Deployment Options
 
-## Deploy on Vercel
+#### Deploy on Railway
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Push your code to GitHub
+2. Go to [Railway](https://railway.app)
+3. Create an account
+4. Create a new project
+5. Connect your GitHub repository
+6. Deploy
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+#### Deploy on DigitalOcean App Platform
+
+1. Fork this repository
+2. Create a new app on DigitalOcean App Platform
+3. Connect your repository
+4. Deploy
+
+## Privacy & Security
+
+- All image processing is done client-side in the browser
+- No server storage of images
+- No API keys required
+- Secure headers configured for production
+
+## License
+
+MIT License - feel free to use this project for personal or commercial purposes.

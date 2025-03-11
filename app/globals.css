@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-rgb: 0, 0, 0;
+  }
+}
+
+/* Ensure proper viewport height on mobile */
+html {
+  height: -webkit-fill-available;
+}
+
+body {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+  margin: 0;
+  padding: 0;
+}
+
+/* Improve scrolling behavior */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent content shift on scrollbar appearance */
+html {
+  scrollbar-gutter: stable;
+}
+
+/* Consistent box sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
+} 
