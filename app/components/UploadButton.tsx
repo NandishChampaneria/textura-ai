@@ -11,58 +11,94 @@ export default function UploadButton({ isDarkMode }: Props) {
     const file = acceptedFiles[0];
     if (!file) return;
 
-    // Create a new FileReader
-    const reader = new FileReader();
+    // Handle iOS image upload
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     
-    reader.onload = async (e) => {
-      if (e.target?.result) {
-        try {
-          // Create a temporary image to get dimensions
-          const img = new Image();
-          img.src = e.target.result as string;
-          
-          await new Promise((resolve, reject) => {
-            img.onload = resolve;
-            img.onerror = reject;
-          });
+    try {
+      // Create a new FileReader
+      const reader = new FileReader();
+      
+      reader.onload = async (e) => {
+        const target = e.target as FileReader | null;
+        if (target?.result) {
+          try {
+            // Create a temporary image to get dimensions
+            const img = new Image();
+            
+            // For iOS, we need to handle the image loading differently
+            if (isIOS) {
+              img.setAttribute('crossorigin', 'anonymous');
+            }
+            
+            await new Promise((resolve, reject) => {
+              img.onload = resolve;
+              img.onerror = (error) => {
+                console.error('Error loading image:', error);
+                reject(error);
+              };
+              
+              // Set source after adding event listeners
+              if (typeof target.result === 'string') {
+                img.src = target.result;
+              }
+            });
 
-          // Check if image is too large (optional, adjust limits as needed)
-          if (img.width > 4096 || img.height > 4096) {
-            // Resize the image before processing
+            // Create a canvas to handle the image
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             
-            // Calculate new dimensions
-            const scale = Math.min(4096 / img.width, 4096 / img.height);
-            canvas.width = img.width * scale;
-            canvas.height = img.height * scale;
+            // Set canvas dimensions based on image size
+            let finalWidth = img.width;
+            let finalHeight = img.height;
+            
+            // Resize if image is too large
+            if (img.width > 4096 || img.height > 4096) {
+              const scale = Math.min(4096 / img.width, 4096 / img.height);
+              finalWidth = Math.floor(img.width * scale);
+              finalHeight = Math.floor(img.height * scale);
+            }
+            
+            canvas.width = finalWidth;
+            canvas.height = finalHeight;
             
             if (ctx) {
-              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-              const resizedImageUrl = canvas.toDataURL('image/jpeg', 0.9);
-              window.dispatchEvent(new CustomEvent('imageUploaded', { detail: { imageUrl: resizedImageUrl } }));
+              // Enable image smoothing for better quality
+              ctx.imageSmoothingEnabled = true;
+              ctx.imageSmoothingQuality = 'high';
+              
+              // Draw image to canvas
+              ctx.drawImage(img, 0, 0, finalWidth, finalHeight);
+              
+              // Convert to JPEG with high quality
+              const processedImageUrl = canvas.toDataURL('image/jpeg', 0.95);
+              
+              // Dispatch event with processed image
+              window.dispatchEvent(new CustomEvent('imageUploaded', {
+                detail: { imageUrl: processedImageUrl }
+              }));
             }
-          } else {
-            // Use original image if it's within size limits
-            window.dispatchEvent(new CustomEvent('imageUploaded', { detail: { imageUrl: e.target.result } }));
+          } catch (error) {
+            console.error('Error processing image:', error);
           }
-        } catch (error) {
-          console.error('Error processing uploaded image:', error);
         }
-      }
-    };
+      };
 
-    reader.onerror = () => {
-      console.error('Error reading file');
-    };
+      reader.onerror = (error) => {
+        console.error('Error reading file:', error);
+      };
 
-    reader.readAsDataURL(file);
+      // Read file as data URL
+      reader.readAsDataURL(file);
+      
+    } catch (error) {
+      console.error('Error handling file:', error);
+    }
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'image/*': ['.png', '.jpg', '.jpeg']
+      'image/*': ['.png', '.jpg', '.jpeg', '.heic', '.heif']
     },
     multiple: false,
     maxSize: 20 * 1024 * 1024 // 20MB limit
@@ -73,7 +109,7 @@ export default function UploadButton({ isDarkMode }: Props) {
       {...getRootProps()} 
       className={`relative group cursor-pointer`}
     >
-      <input {...getInputProps()} />
+      <input {...getInputProps()} capture="environment" />
       <button
         className={`
           px-6 py-2.5 rounded-xl text-sm font-medium

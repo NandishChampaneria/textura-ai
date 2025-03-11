@@ -51,7 +51,7 @@ export default function LandingPage() {
                     : 'bg-black/5 hover:bg-black/10'
                 }`}
               >
-                Open Editor
+                Editor
               </Link>
               <a 
                 href="https://github.com/NandishChampaneria/textura-ai"
