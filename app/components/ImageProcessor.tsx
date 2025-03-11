@@ -201,10 +201,10 @@ export default function ImageProcessor() {
 
     // Draw each text layer
     textLayers.forEach(layer => {
-      ctx.save();
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
       const fontSize = Math.min(width, height) * (layer.fontSize / 100);
       ctx.font = `${layer.fontWeight} ${Math.ceil(fontSize)}px "${layer.fontFamily}", -apple-system, BlinkMacSystemFont, system-ui, Arial`;
 
@@ -219,14 +219,14 @@ export default function ImageProcessor() {
       const opacity = Math.round(layer.opacity * 255).toString(16).padStart(2, '0');
       
       ctx.fillStyle = `${layer.color}${opacity}`;
-      ctx.textRendering = 'geometricPrecision';
-      ctx.fontKerning = 'normal';
-      ctx.fontStretch = 'normal';
-      ctx.fontVariantCaps = 'normal';
+    ctx.textRendering = 'geometricPrecision';
+    ctx.fontKerning = 'normal';
+    ctx.fontStretch = 'normal';
+    ctx.fontVariantCaps = 'normal';
       ctx.letterSpacing = `${layer.letterSpacing}px`;
-      
+    
       ctx.fillText(layer.text, xPos, yPos);
-      ctx.restore();
+    ctx.restore();
     });
 
     // Draw subject on top
@@ -486,13 +486,13 @@ export default function ImageProcessor() {
                 {/* Selected Layer Settings */}
                 {selectedLayerId && textLayers.find(l => l.id === selectedLayerId) && (
                   <div className="space-y-6">
-                    {/* Text Input */}
+            {/* Text Input */}
                     <div className="space-y-2">
                       <label className={`text-sm font-medium ${
                         isDarkMode ? 'text-zinc-200' : 'text-zinc-700'
                       }`}>Text</label>
-                      <input
-                        type="text"
+              <input
+                type="text"
                         value={textLayers.find(l => l.id === selectedLayerId)?.text ?? ''}
                         onChange={(e) => updateTextLayer(selectedLayerId, { text: e.target.value })}
                         className={`w-full px-4 py-2.5 rounded-xl transition-all duration-200 ${
@@ -500,16 +500,16 @@ export default function ImageProcessor() {
                             ? 'bg-black/20 border border-white/10 text-white placeholder-zinc-500 focus:ring-2 focus:ring-white/20' 
                             : 'bg-zinc-50 border border-zinc-200 text-black placeholder-zinc-400 focus:ring-2 focus:ring-black/5'
                         }`}
-                        placeholder="Enter text..."
-                      />
-                    </div>
+                placeholder="Enter text..."
+              />
+            </div>
 
-                    {/* Font Family */}
+              {/* Font Family */}
                     <div className="space-y-2">
                       <label className={`text-sm font-medium ${
                         isDarkMode ? 'text-zinc-200' : 'text-zinc-700'
                       }`}>Font Family</label>
-                      <select
+                <select
                         value={textLayers.find(l => l.id === selectedLayerId)?.fontFamily ?? 'SF Pro Display'}
                         onChange={(e) => updateTextLayer(selectedLayerId, { fontFamily: e.target.value })}
                         className={`w-full px-4 py-2.5 rounded-xl transition-all duration-200 ${
@@ -517,18 +517,18 @@ export default function ImageProcessor() {
                             ? 'bg-black/20 border border-white/10 text-white' 
                             : 'bg-zinc-50 border border-zinc-200 text-black'
                         }`}
-                      >
-                        {fontOptions.map(font => (
+                >
+                  {fontOptions.map(font => (
                           <option key={font.value} value={font.value} className={
                             isDarkMode ? 'bg-zinc-900 text-white' : 'bg-white text-black'
                           }>
-                            {font.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                      {font.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-                    {/* Font Weight */}
+              {/* Font Weight */}
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <label className={`text-sm font-medium ${
@@ -539,7 +539,7 @@ export default function ImageProcessor() {
                         }`}>
                           {textLayers.find(l => l.id === selectedLayerId)?.fontWeight ?? 400}
                         </span>
-                      </div>
+                </div>
                       <input
                         type="range"
                         min="100"
@@ -553,11 +553,11 @@ export default function ImageProcessor() {
                             : 'bg-zinc-200 accent-black'
                         }`}
                       />
-                    </div>
+              </div>
 
-                    {/* Color */}
+              {/* Color */}
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between">
                         <label className={`text-sm font-medium ${
                           isDarkMode ? 'text-zinc-200' : 'text-zinc-700'
                         }`}>Color</label>
@@ -565,26 +565,26 @@ export default function ImageProcessor() {
                           isDarkMode ? 'bg-black/20 text-zinc-300' : 'bg-zinc-100 text-zinc-600'
                         }`}>
                           {textLayers.find(l => l.id === selectedLayerId)?.color.toUpperCase() ?? '#FFFFFF'}
-                        </span>
-                      </div>
+                  </span>
+                </div>
                       <div className={`relative group p-4 rounded-xl ${
                         isDarkMode ? 'bg-black/20' : 'bg-zinc-50'
                       }`}>
-                        <input
-                          type="color"
+                  <input
+                    type="color"
                           value={textLayers.find(l => l.id === selectedLayerId)?.color ?? '#FFFFFF'}
                           onChange={(e) => updateTextLayer(selectedLayerId, { color: e.target.value })}
                           className="w-full h-12 rounded-lg cursor-pointer appearance-none
                             [&::-webkit-color-swatch-wrapper]:p-1
                             [&::-webkit-color-swatch]:rounded-md
                             [&::-moz-color-swatch]:rounded-md"
-                        />
-                      </div>
-                    </div>
+                  />
+                </div>
+              </div>
 
-                    {/* Opacity */}
+              {/* Opacity */}
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between">
                         <label className={`text-sm font-medium ${
                           isDarkMode ? 'text-zinc-200' : 'text-zinc-700'
                         }`}>Opacity</label>
@@ -592,13 +592,13 @@ export default function ImageProcessor() {
                           isDarkMode ? 'bg-black/20 text-zinc-300' : 'bg-zinc-100 text-zinc-600'
                         }`}>
                           {Math.round((textLayers.find(l => l.id === selectedLayerId)?.opacity ?? 1) * 100)}%
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="1"
-                        step="0.1"
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
                         value={textLayers.find(l => l.id === selectedLayerId)?.opacity ?? 1}
                         onChange={(e) => updateTextLayer(selectedLayerId, { opacity: parseFloat(e.target.value) })}
                         className={`w-full h-2 rounded-full appearance-none cursor-pointer ${
@@ -606,12 +606,12 @@ export default function ImageProcessor() {
                             ? 'bg-black/20 accent-white' 
                             : 'bg-zinc-200 accent-black'
                         }`}
-                      />
-                    </div>
+                />
+              </div>
 
                     {/* Size */}
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between">
                         <label className={`text-sm font-medium ${
                           isDarkMode ? 'text-zinc-200' : 'text-zinc-700'
                         }`}>Size</label>
@@ -619,12 +619,12 @@ export default function ImageProcessor() {
                           isDarkMode ? 'bg-black/20 text-zinc-300' : 'bg-zinc-100 text-zinc-600'
                         }`}>
                           {textLayers.find(l => l.id === selectedLayerId)?.fontSize ?? 20}%
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min="5"
-                        max="50"
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="5"
+                  max="50"
                         value={textLayers.find(l => l.id === selectedLayerId)?.fontSize ?? 20}
                         onChange={(e) => updateTextLayer(selectedLayerId, { fontSize: parseInt(e.target.value) })}
                         className={`w-full h-2 rounded-full appearance-none cursor-pointer ${
@@ -632,17 +632,17 @@ export default function ImageProcessor() {
                             ? 'bg-black/20 accent-white' 
                             : 'bg-zinc-200 accent-black'
                         }`}
-                      />
-                    </div>
+                />
+              </div>
 
-                    {/* Position */}
+              {/* Position */}
                     <div className="space-y-2">
                       <label className={`text-sm font-medium ${
                         isDarkMode ? 'text-zinc-200' : 'text-zinc-700'
                       }`}>Position</label>
-                      <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between">
                             <span className={`text-xs ${
                               isDarkMode ? 'text-zinc-400' : 'text-zinc-500'
                             }`}>X-axis</span>
@@ -650,12 +650,12 @@ export default function ImageProcessor() {
                               isDarkMode ? 'bg-black/20 text-zinc-300' : 'bg-zinc-100 text-zinc-600'
                             }`}>
                               {textLayers.find(l => l.id === selectedLayerId)?.xPosition ?? 50}%
-                            </span>
-                          </div>
-                          <input
-                            type="range"
-                            min="0"
-                            max="100"
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
                             value={textLayers.find(l => l.id === selectedLayerId)?.xPosition ?? 50}
                             onChange={(e) => updateTextLayer(selectedLayerId, { xPosition: parseInt(e.target.value) })}
                             className={`w-full h-2 rounded-full appearance-none cursor-pointer ${
@@ -663,10 +663,10 @@ export default function ImageProcessor() {
                                 ? 'bg-black/20 accent-white' 
                                 : 'bg-zinc-200 accent-black'
                             }`}
-                          />
-                        </div>
+                    />
+                  </div>
                         <div className="space-y-2">
-                          <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between">
                             <span className={`text-xs ${
                               isDarkMode ? 'text-zinc-400' : 'text-zinc-500'
                             }`}>Y-axis</span>
@@ -674,12 +674,12 @@ export default function ImageProcessor() {
                               isDarkMode ? 'bg-black/20 text-zinc-300' : 'bg-zinc-100 text-zinc-600'
                             }`}>
                               {textLayers.find(l => l.id === selectedLayerId)?.yPosition ?? 50}%
-                            </span>
-                          </div>
-                          <input
-                            type="range"
-                            min="0"
-                            max="100"
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
                             value={textLayers.find(l => l.id === selectedLayerId)?.yPosition ?? 50}
                             onChange={(e) => updateTextLayer(selectedLayerId, { yPosition: parseInt(e.target.value) })}
                             className={`w-full h-2 rounded-full appearance-none cursor-pointer ${
@@ -688,12 +688,12 @@ export default function ImageProcessor() {
                                 : 'bg-zinc-200 accent-black'
                             }`}
                           />
-                        </div>
-                      </div>
-                    </div>
+                </div>
+              </div>
+            </div>
 
                     {/* Rotation */}
-                    <div className="space-y-2">
+                <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <label className={`text-sm font-medium ${
                           isDarkMode ? 'text-zinc-200' : 'text-zinc-700'
@@ -703,7 +703,7 @@ export default function ImageProcessor() {
                         }`}>
                           {textLayers.find(l => l.id === selectedLayerId)?.rotation ?? 0}°
                         </span>
-                      </div>
+                  </div>
                       <input
                         type="range"
                         min="-180"
@@ -716,7 +716,7 @@ export default function ImageProcessor() {
                             : 'bg-zinc-200 accent-black'
                         }`}
                       />
-                    </div>
+            </div>
 
                     {/* Letter Spacing */}
                     <div className="space-y-2">
@@ -729,7 +729,7 @@ export default function ImageProcessor() {
                         }`}>
                           {textLayers.find(l => l.id === selectedLayerId)?.letterSpacing ?? 0}px
                         </span>
-                      </div>
+          </div>
                       <input
                         type="range"
                         min="-5"
@@ -745,7 +745,7 @@ export default function ImageProcessor() {
                     </div>
                   </div>
                 )}
-              </div>
+                </div>
             </div>
           </div>
         </div>
