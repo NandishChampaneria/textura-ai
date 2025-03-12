@@ -12,7 +12,6 @@ export default function TexturaLogo({ className = "w-8 h-8" }: TexturaLogoProps)
         r="15" 
         className="stroke-current" 
         strokeWidth="1.5" 
-        strokeDasharray="4 2"
         strokeOpacity="1"
       />
 
