@@ -213,6 +213,22 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Example Images Section */}
+      <section className={`py-20 border-t ${
+        isDarkMode ? 'border-white/10' : 'border-black/10'
+      }`}>
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold mb-6 text-center">Example Creations</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <img src="/example1.png" alt="Example 1" className="w-full h-full object-cover rounded-lg shadow-lg hover:scale-[1.01] transition-all duration-300" />
+            <img src="/example2.png" alt="Example 2" className="w-full h-full object-cover rounded-lg shadow-lg hover:scale-[1.01] transition-all duration-300" />
+            <img src="/example3.png" alt="Example 3" className="w-full h-full object-cover rounded-lg shadow-lg hover:scale-[1.01] transition-all duration-300" />
+            <img src="/example4.png" alt="Example 4" className="w-full h-full object-cover rounded-lg shadow-lg hover:scale-[1.01] transition-all duration-300" />
+          </div>
+        </div>
+      </section>
+
+
       {/* CTA Section */}
       <section className={`py-20 border-t ${
         isDarkMode ? 'border-white/10' : 'border-black/10'
