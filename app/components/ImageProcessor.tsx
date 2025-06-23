@@ -1,6 +1,5 @@
 "use client";
 import { useCallback, useState, useRef, useEffect } from 'react';
-import { removeBackground } from '@imgly/background-removal';
 import UploadButton from './UploadButton';
 import TexturaLogo from './TexturaLogo';
 import Link from 'next/link';
@@ -292,6 +291,9 @@ export default function ImageProcessor() {
 
       // Get subject-only image
       console.log('Starting background removal...');
+      
+      // Dynamic import to avoid build-time issues
+      const { removeBackground } = await import('@imgly/background-removal');
       const subjectBlob = await removeBackground(blob);
       console.log('Background removal completed', { size: subjectBlob.size });
       

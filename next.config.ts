@@ -9,18 +9,11 @@ const nextConfig: NextConfig = {
   },
   // Configure webpack for WASM support
   webpack: (config, { isServer }) => {
-    // Enable WASM support
+    // Handle WASM files properly
     config.experiments = {
       ...config.experiments,
       asyncWebAssembly: true,
-      layers: true,
     };
-
-    // Handle WASM files
-    config.module.rules.push({
-      test: /\.wasm$/,
-      type: 'webassembly/async',
-    });
 
     // Ignore node-specific modules on client side
     if (!isServer) {
@@ -29,6 +22,8 @@ const nextConfig: NextConfig = {
         fs: false,
         path: false,
         crypto: false,
+        stream: false,
+        buffer: false,
       };
     }
 
