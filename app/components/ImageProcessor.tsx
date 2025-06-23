@@ -247,12 +247,21 @@ export default function ImageProcessor() {
   const processImage = async (imageUrl: string) => {
     try {
       setLoading(true);
+      console.log('Starting image processing...', { imageUrl: imageUrl.substring(0, 50) + '...' });
 
       // Load original image
       const img = new Image();
+      img.crossOrigin = 'anonymous';
       img.src = imageUrl;
-      await new Promise((resolve) => {
-        img.onload = resolve;
+      await new Promise((resolve, reject) => {
+        img.onload = () => {
+          console.log('Original image loaded successfully', { width: img.width, height: img.height });
+          resolve(null);
+        };
+        img.onerror = (error) => {
+          console.error('Failed to load original image:', error);
+          reject(new Error('Failed to load original image'));
+        };
       });
 
       // Calculate dimensions to fit container
@@ -274,17 +283,31 @@ export default function ImageProcessor() {
         finalHeight = Math.floor(finalHeight * scale);
       }
 
+      console.log('Image dimensions calculated', { finalWidth, finalHeight });
+
       // Convert base64 to blob
       const response = await fetch(imageUrl);
       const blob = await response.blob();
+      console.log('Image converted to blob', { size: blob.size, type: blob.type });
 
       // Get subject-only image
+      console.log('Starting background removal...');
       const subjectBlob = await removeBackground(blob);
+      console.log('Background removal completed', { size: subjectBlob.size });
+      
       const subjectUrl = URL.createObjectURL(subjectBlob);
       const subjectImg = new Image();
+      subjectImg.crossOrigin = 'anonymous';
       subjectImg.src = subjectUrl;
-      await new Promise((resolve) => {
-        subjectImg.onload = resolve;
+      await new Promise((resolve, reject) => {
+        subjectImg.onload = () => {
+          console.log('Subject image loaded successfully', { width: subjectImg.width, height: subjectImg.height });
+          resolve(null);
+        };
+        subjectImg.onerror = (error) => {
+          console.error('Failed to load subject image:', error);
+          reject(new Error('Failed to load subject image'));
+        };
       });
 
       // Store processed images for reuse
@@ -295,12 +318,17 @@ export default function ImageProcessor() {
         height: finalHeight
       });
 
+      console.log('Image processing completed successfully');
+      
       // Clean up
       URL.revokeObjectURL(subjectUrl);
       setLoading(false);
     } catch (error) {
       console.error('Error processing image:', error);
       setLoading(false);
+      
+      // Show user-friendly error message
+      alert(`Failed to process image: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again with a different image.`);
       throw error;
     }
   };

@@ -53,16 +53,7 @@ export default function LandingPage() {
               >
                 Editor
               </Link>
-              <a 
-                href="https://github.com/NandishChampaneria/textura-ai"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`text-sm hover:text-current transition-colors duration-200 ${
-                  isDarkMode ? 'text-white/70' : 'text-black/70'
-                }`}
-              >
-                GitHub
-              </a>
+
             </div>
           </div>
         </div>
@@ -271,16 +262,7 @@ export default function LandingPage() {
               }`}>© 2024 Textura.ai</span>
             </Link>
             <div className="flex items-center space-x-6">
-              <a 
-                href="https://github.com/NandishChampaneria/textura-ai"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`text-sm hover:text-current transition-colors duration-200 ${
-                  isDarkMode ? 'text-white/70' : 'text-black/70'
-                }`}
-              >
-                GitHub
-              </a>
+
               <Link
                 href="/editor"
                 className={`text-sm hover:text-current transition-colors duration-200 ${

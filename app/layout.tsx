@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
+import { Analytics } from '@vercel/analytics/react';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Text Behind Subject',
-  description: 'Create social media thumbnails with text behind subjects',
+  title: 'Textura.ai - Text Behind Image Editor',
+  description: 'Create stunning text overlays behind subjects in your images. Professional image editing tool for social media thumbnails and graphics.',
 };
 
 export default function RootLayout({
@@ -13,8 +14,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <link rel="icon" href="/favicon.png" type="image/png" />
-      <body>{children}</body>
+      <head>
+        <link rel="icon" href="/favicon.png" type="image/png" />
+      </head>
+      <body>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 } 
